@@ -8,18 +8,76 @@
 
 import UIKit
 
-class ViewController: UIViewController {
-
+class ViewController: ViewControllerWithKeyboardControl, UITextFieldDelegate {    
+    
+    @IBOutlet weak var imageLoaded: UIImageView!
+    
+    @IBOutlet weak var searchTextField: UITextField!
+    @IBOutlet weak var latitudeTextField: UITextField!
+    @IBOutlet weak var longitudeTextField: UITextField!
+    
+    @IBOutlet weak var detailsLabel: UILabel!
+    
+    @IBOutlet weak var searchButton: UIButton!
+    @IBOutlet weak var searchLatLonButton: UIButton!
+    
+    
+    let PHRASE_SEARCH: String = "Phrase Text Field"
+    let LATITUDE: String = "Latitude"
+    let LONGITUDE: String = "Longitude"
+    
     override func viewDidLoad() {
         super.viewDidLoad()
-        // Do any additional setup after loading the view, typically from a nib.
+        subscribeToKeyboardNotifications()
+        
     }
 
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
+    override func viewWillDisappear(animated: Bool) {
+        super.viewWillDisappear(true)
+        unsubscribeFromKeyboardNotifications()
     }
-
-
+    
+    
+    // Keyboard notify notification center the keyboard will show
+    func keyboardWillShow(notification: NSNotification) {
+        if (view.frame.origin.y >= 0 &&
+            (searchTextField.isFirstResponder() || latitudeTextField.isFirstResponder() || longitudeTextField.isFirstResponder())) {
+                view.frame.origin.y -= getKeyboardHeight(notification)
+        }
+    }
+    
+    
+    // Keyboard notify notification center the keyboard will hide
+    func keyboardWillHide(notification: NSNotification) {
+        if (view.frame.origin.y <= 0 && (searchTextField.isFirstResponder() || latitudeTextField.isFirstResponder() || longitudeTextField.isFirstResponder())) {
+                view.frame.origin.y += getKeyboardHeight(notification)
+        }
+    }
+    
+    
+    
+    @IBAction func phraseSearchButton(sender: UIButton) {
+        // make the search for phrase
+    }
+    
+    
+    
+    @IBAction func latLonSearchButton(sender: UIButton) {
+        // make the search by lat. and lon.
+    }
+    
+    
+    // Check for what field (UITextView) has data and what doesn't, enabling and disabiling fields and buttons
+    func checkStringsForNotEmpty(uiTextField: UITextField) {
+        searchButton.enabled = false
+        searchLatLonButton.enabled = false
+        if uiTextField.text != nil {
+            if uiTextField.placeholder == PHRASE_SEARCH {
+                searchButton.enabled = true
+            } else if uiTextField.placeholder == LATITUDE && uiTextField.placeholder == LONGITUDE {
+                searchLatLonButton.enabled = true
+            }
+        }
+    }
 }
 
