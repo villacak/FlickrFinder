@@ -64,6 +64,7 @@ class UrlHelper: NSObject {
     }
     
     
+    
     // Make a GET request call from a url as string
     func requestGETCall(urlToCall: String) -> PhotoResult {
         var toReturn: PhotoResult!
@@ -86,6 +87,7 @@ class UrlHelper: NSObject {
         })
         return toReturn
     }
+    
     
     
     // Parse NSDictionary to AnyObject - JSON
@@ -114,6 +116,8 @@ class UrlHelper: NSObject {
     }
     
     
+    
+    // ASsemble the URL to load the images as per link: https://www.flickr.com/services/api/flickr.photos.search.html
     func assembleUrlToLoadImage(jsonItem: AnyObject) -> String {
         var urlToReturn: String!
         
