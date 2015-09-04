@@ -10,21 +10,20 @@ import Foundation
 
 class Photo: NSObject {
     
-//    <photo id="2636" owner="47058503995@N01"
-//    secret="a123456" server="2" title="test_04"
-//    ispublic="1" isfriend="0" isfamily="0" />
-    
-    var id: String!
-    var owner: String!
-    var secret: String!
-    var server: String!
-    var title: String!
-    var isPublic: String!
-    var isFriend: String!
-    var isFamily: String!
+   
+    var farm: String?
+    var id: String?
+    var owner: String?
+    var secret: String?
+    var server: String?
+    var title: String?
+    var isPublic: String?
+    var isFriend: String?
+    var isFamily: String?
     
     
     override init() {
+        farm = ""
         id = ""
         owner = ""
         secret = ""
@@ -36,7 +35,8 @@ class Photo: NSObject {
     }
     
     
-    init(id: String, owner: String, secret: String, server: String, title: String, isPublic: String, isFriend: String, isFamily: String) {
+    init(farm: String, id: String, owner: String, secret: String, server: String, title: String, isPublic: String, isFriend: String, isFamily: String) {
+        self.farm = farm
         self.id = id
         self.owner = owner
         self.secret = secret

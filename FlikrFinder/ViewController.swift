@@ -8,7 +8,7 @@
 
 import UIKit
 
-class ViewController: ViewControllerWithKeyboardControl, UITextFieldDelegate {    
+class ViewController: ViewControllerWithKeyboardControl, UITextFieldDelegate, NSURLConnectionDelegate {
     
     @IBOutlet weak var imageLoaded: UIImageView!
     
@@ -30,8 +30,10 @@ class ViewController: ViewControllerWithKeyboardControl, UITextFieldDelegate {
         super.viewDidLoad()
         subscribeToKeyboardNotifications()
         
+        searchTextField.text = "ball";
+        
     }
-
+    
     override func viewWillDisappear(animated: Bool) {
         super.viewWillDisappear(true)
         unsubscribeFromKeyboardNotifications()
@@ -50,14 +52,26 @@ class ViewController: ViewControllerWithKeyboardControl, UITextFieldDelegate {
     // Keyboard notify notification center the keyboard will hide
     func keyboardWillHide(notification: NSNotification) {
         if (view.frame.origin.y <= 0 && (searchTextField.isFirstResponder() || latitudeTextField.isFirstResponder() || longitudeTextField.isFirstResponder())) {
-                view.frame.origin.y += getKeyboardHeight(notification)
+            view.frame.origin.y += getKeyboardHeight(notification)
         }
     }
     
     
     
     @IBAction func phraseSearchButton(sender: UIButton) {
-        // make the search for phrase
+        var urlHelper: UrlHelper = UrlHelper()
+        urlHelper.isRandom = false
+        urlHelper.photoIndex = 1
+        
+        let urlToCall: String = urlHelper.createSearchRequestURL(searchTextField.text)
+        //        let photoResult: PhotoResult = urlHelper.requestGETCall(urlToCall)
+        urlHelper.requestGETCall(urlToCall)
+        
+        if let result = urlHelper.photoResultReturn {
+            let photoResult: PhotoResult = result
+            detailsLabel = photoResult.photoDetail
+            imageLoaded.image = photoResult.photoImage
+        }
     }
     
     

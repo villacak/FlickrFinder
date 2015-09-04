@@ -93,11 +93,11 @@
 				33E0AABC1B93E2DA0089E653 /* Utils */,
 				3305EB8D1B91446100BCD0F6 /* AppDelegate.swift */,
 				3305EB8F1B91446100BCD0F6 /* ViewController.swift */,
+				3305EBAF1B929F0600BCD0F6 /* ViewControllerWithKeyboardControl.swift */,
 				3305EB911B91446100BCD0F6 /* Main.storyboard */,
 				3305EB941B91446100BCD0F6 /* Images.xcassets */,
 				3305EB961B91446100BCD0F6 /* LaunchScreen.xib */,
 				3305EB8B1B91446100BCD0F6 /* Supporting Files */,
-				3305EBAF1B929F0600BCD0F6 /* ViewControllerWithKeyboardControl.swift */,
 			);
 			path = FlikrFinder;
 			sourceTree = "<group>";
