@@ -70,7 +70,7 @@ class UrlHelper: NSObject { //, NSURLConnectionDelegate {
     
     
     // Make a GET request call from a url as string
-    func requestGETCall(urlToCall: String) {
+    func requestPOSTCall(urlToCall: String) {
         var url: NSURL = NSURL(string: urlToCall)!
         var request: NSMutableURLRequest = NSMutableURLRequest(URL: url)
         request.HTTPMethod = POST_METHOD
@@ -81,7 +81,7 @@ class UrlHelper: NSObject { //, NSURLConnectionDelegate {
             let jsonResult: NSDictionary? = NSJSONSerialization.JSONObjectWithData(data, options:NSJSONReadingOptions.MutableContainers, error: error) as? NSDictionary
             
             if (jsonResult != nil && jsonResult!.count > 1) {
-                self.photoResultReturn = self.requestGetPhoto(jsonResult!, itemsCount: jsonResult!.count)
+                self.photoResultReturn = self.requestPhoto(jsonResult!, itemsCount: jsonResult!.count)
             } else {
                 Utils().okDismissAlert(error.debugDescription, messageStr: "No Results Found")
             }
@@ -100,19 +100,13 @@ class UrlHelper: NSObject { //, NSURLConnectionDelegate {
     
     
     // Return the PhotoResult populated
-    func requestGetPhoto(photos: AnyObject, itemsCount: Int) -> PhotoResult {
+    func requestPhoto(photos: AnyObject, itemsCount: Int) -> PhotoResult {
         var photoResultTemp: PhotoResult!
-        if (isRandom) {
-            photoIndex = Utils().ramdomNumber(itemsCount)
-        } else {
-            if (photoIndex == 0 || (photoIndex >= 1 && photoIndex <= itemsCount)) {
-//                photoIndex+
+        if (photoIndex == 0 || (photoIndex >= 1 && photoIndex <= itemsCount)) {
+            if (isRandom) {
+                photoIndex = Utils().ramdomNumber(itemsCount)
             }
-        }
-        
-        
-        
-        if (itemsCount > 1) {
+            
             let jsonPhotos: [String : AnyObject] = photos["photos"] as! [String : AnyObject]
             let arrayDictionaryPhoto: [[String : AnyObject]] = jsonPhotos["photo"] as! [[String : AnyObject]]//[NSDictionary]
             let photoObj: Photo = populatePhoto(arrayDictionaryPhoto[photoIndex])
@@ -123,9 +117,7 @@ class UrlHelper: NSObject { //, NSURLConnectionDelegate {
             
             
             
-            
         }
-        
         return photoResultTemp
     }
     

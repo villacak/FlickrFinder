@@ -64,8 +64,7 @@ class ViewController: ViewControllerWithKeyboardControl, UITextFieldDelegate, NS
         urlHelper.photoIndex = 1
         
         let urlToCall: String = urlHelper.createSearchRequestURL(searchTextField.text)
-        //        let photoResult: PhotoResult = urlHelper.requestGETCall(urlToCall)
-        urlHelper.requestGETCall(urlToCall)
+        urlHelper.requestPOSTCall(urlToCall)
         
         if let result = urlHelper.photoResultReturn {
             let photoResult: PhotoResult = result
