@@ -20,6 +20,7 @@ class Photo: NSObject {
     var isPublic: String?
     var isFriend: String?
     var isFamily: String?
+    var size: String?
     
     
     override init() {
@@ -32,6 +33,7 @@ class Photo: NSObject {
         isPublic = ""
         isFriend = ""
         isFamily = ""
+        size = "m"
     }
     
     
@@ -45,6 +47,7 @@ class Photo: NSObject {
         self.isPublic = isPublic
         self.isFriend = isFriend
         self.isFamily = isFamily
+        self.size = "m"
     }
 
 }

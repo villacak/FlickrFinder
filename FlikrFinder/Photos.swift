@@ -10,12 +10,11 @@ import Foundation
 
 class Photos: NSObject {
     
-//    <photos page="2" pages="89" perpage="10" total="881">
-    var page: String!
-    var pages: String!
-    var perPage: String!
-    var total: String!
-    var photoArray: [Photo]!
+    var page: String?
+    var pages: String?
+    var perPage: String?
+    var total: String?
+    var photoArray: [Photo]?
     
     
     override init() {

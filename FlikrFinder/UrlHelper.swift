@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import UIKit
 
 
 class UrlHelper: NSObject { //, NSURLConnectionDelegate {
@@ -43,6 +44,8 @@ class UrlHelper: NSObject { //, NSURLConnectionDelegate {
     let EMPTY_DICTIONARY: Int = 1
     
     var photoResultReturn: PhotoResult?
+    var jsonResultTemp: NSDictionary?
+    var photoJsonResultTemp: NSDictionary?
     
     // Encode the Dictionary Strings
     func encodeParameters(#params: [String: String]) -> String {
@@ -70,19 +73,20 @@ class UrlHelper: NSObject { //, NSURLConnectionDelegate {
     
     
     // Make a GET request call from a url as string
-    func requestPOSTCall(urlToCall: String) {
+    func requestPOSTCall(urlToCall: String, handler:(result: PhotoResult?)-> Void) {
         var url: NSURL = NSURL(string: urlToCall)!
         var request: NSMutableURLRequest = NSMutableURLRequest(URL: url)
         request.HTTPMethod = POST_METHOD
-        
         
         NSURLConnection.sendAsynchronousRequest(request, queue: NSOperationQueue(), completionHandler:{ (response:NSURLResponse!, data: NSData!, error: NSError!) -> Void in
             var error: AutoreleasingUnsafeMutablePointer<NSError?> = nil
             let jsonResult: NSDictionary? = NSJSONSerialization.JSONObjectWithData(data, options:NSJSONReadingOptions.MutableContainers, error: error) as? NSDictionary
             
             if (jsonResult != nil && jsonResult!.count > 1) {
-                self.photoResultReturn = self.requestPhoto(jsonResult!, itemsCount: jsonResult!.count)
+                self.requestPhoto(jsonResult!, itemsCount: jsonResult!.count)
+                handler(result: self.photoResultReturn)
             } else {
+                handler(result: nil)
                 Utils().okDismissAlert(error.debugDescription, messageStr: "No Results Found")
             }
         })
@@ -100,8 +104,7 @@ class UrlHelper: NSObject { //, NSURLConnectionDelegate {
     
     
     // Return the PhotoResult populated
-    func requestPhoto(photos: AnyObject, itemsCount: Int) -> PhotoResult {
-        var photoResultTemp: PhotoResult!
+    func requestPhoto(photos: AnyObject, itemsCount: Int) {
         if (photoIndex == 0 || (photoIndex >= 1 && photoIndex <= itemsCount)) {
             if (isRandom) {
                 photoIndex = Utils().ramdomNumber(itemsCount)
@@ -111,15 +114,23 @@ class UrlHelper: NSObject { //, NSURLConnectionDelegate {
             let arrayDictionaryPhoto: [[String : AnyObject]] = jsonPhotos["photo"] as! [[String : AnyObject]]//[NSDictionary]
             let photoObj: Photo = populatePhoto(arrayDictionaryPhoto[photoIndex])
             let urlToCall: String = assembleUrlToLoadImage(photoObj)
-            var request: NSMutableURLRequest = NSMutableURLRequest()
-            request.URL = NSURL(string: urlToCall)
-            request.HTTPMethod = POST_METHOD
             
-            
-            
+            let url: NSURL = NSURL(string: urlToCall)!
+            if let imageData = NSData(contentsOfURL: url) {
+                dispatch_async(dispatch_get_main_queue(), {
+                    let imageTemp: UIImage = UIImage(data: imageData)!
+                    var titleLabel: UILabel = UILabel()
+                    var photoDetailLabel: UILabel = UILabel()
+                    titleLabel.text = photoObj.title
+                    photoDetailLabel.text = ""
+                    self.photoResultReturn = PhotoResult(photoImage: imageTemp, photoTitle: titleLabel, photoDetail: photoDetailLabel)
+                })
+            } else {
+                println("Image does not exist at \(url)")
+            }
         }
-        return photoResultTemp
     }
+    
     
     
     // Populate Photo object
@@ -138,10 +149,12 @@ class UrlHelper: NSObject { //, NSURLConnectionDelegate {
     }
     
     
+    
     // ASsemble the URL to load the images as per link: https://www.flickr.com/services/api/flickr.photos.search.html
     func assembleUrlToLoadImage(item: Photo) -> String {
-        var urlToReturn: String = "https://farm" + item.farm! + ".statickflickr.com/" + item.server!
-        urlToReturn = urlToReturn + "/" + item.id! + "_" + item.secret! + ".jpg"
+        // https://farm{farm-id}.staticflickr.com/{server-id}/{id}_{secret}.jpg
+        var urlToReturn: String = "https://farm\(item.farm!).staticflickr.com/\(item.server!)/\(item.id!)_\(item.secret!).jpg"
+        println(urlToReturn)
         return urlToReturn
     }
     

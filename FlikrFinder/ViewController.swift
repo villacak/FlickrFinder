@@ -60,17 +60,17 @@ class ViewController: ViewControllerWithKeyboardControl, UITextFieldDelegate, NS
     
     @IBAction func phraseSearchButton(sender: UIButton) {
         var urlHelper: UrlHelper = UrlHelper()
-        urlHelper.isRandom = false
-        urlHelper.photoIndex = 1
-        
-        let urlToCall: String = urlHelper.createSearchRequestURL(searchTextField.text)
-        urlHelper.requestPOSTCall(urlToCall)
-        
-        if let result = urlHelper.photoResultReturn {
-            let photoResult: PhotoResult = result
-            detailsLabel = photoResult.photoDetail
-            imageLoaded.image = photoResult.photoImage
-        }
+        urlHelper.isRandom = true
+//        urlHelper.photoIndex = 1
+        var photoResult: PhotoResult!
+        let urlToCallTemp = urlHelper.createSearchRequestURL(searchTextField.text)
+        urlHelper.requestPOSTCall(urlToCallTemp, handler: { (result) -> Void in
+            if let photoResultTemp = result {
+                photoResult = photoResultTemp
+                self.imageLoaded.image = photoResult.photoImage
+            }
+        })
+        //        let photoResult: PhotoResult = urlHelper.maestroRequest(searchTextField.text)
     }
     
     
