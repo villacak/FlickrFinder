@@ -83,8 +83,11 @@ class UrlHelper: NSObject { //, NSURLConnectionDelegate {
             let jsonResult: NSDictionary? = NSJSONSerialization.JSONObjectWithData(data, options:NSJSONReadingOptions.MutableContainers, error: error) as? NSDictionary
             
             if (jsonResult != nil && jsonResult!.count > 1) {
-                self.requestPhoto(jsonResult!, itemsCount: jsonResult!.count)
-                handler(result: self.photoResultReturn)
+                self.requestPhoto(jsonResult!, itemsCount: jsonResult!.count, handler: { (result) -> Void in
+                    if let hasFinished = result {
+                        handler(result: self.photoResultReturn)
+                    }
+                })
             } else {
                 handler(result: nil)
                 Utils().okDismissAlert(error.debugDescription, messageStr: "No Results Found")
@@ -104,7 +107,7 @@ class UrlHelper: NSObject { //, NSURLConnectionDelegate {
     
     
     // Return the PhotoResult populated
-    func requestPhoto(photos: AnyObject, itemsCount: Int) {
+    func requestPhoto(photos: AnyObject, itemsCount: Int, handler:(result: Bool?)-> Void) {
         if (photoIndex == 0 || (photoIndex >= 1 && photoIndex <= itemsCount)) {
             if (isRandom) {
                 photoIndex = Utils().ramdomNumber(itemsCount)
@@ -124,6 +127,7 @@ class UrlHelper: NSObject { //, NSURLConnectionDelegate {
                     titleLabel.text = photoObj.title
                     photoDetailLabel.text = ""
                     self.photoResultReturn = PhotoResult(photoImage: imageTemp, photoTitle: titleLabel, photoDetail: photoDetailLabel)
+                    handler(result: true)
                 })
             } else {
                 println("Image does not exist at \(url)")
