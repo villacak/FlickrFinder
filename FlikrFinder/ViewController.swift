@@ -8,7 +8,7 @@
 
 import UIKit
 
-class ViewController: ViewControllerWithKeyboardControl, UITextFieldDelegate, NSURLConnectionDelegate {
+class ViewController: ViewControllerWithKeyboardControl, UITextFieldDelegate {
     
     @IBOutlet weak var imageLoaded: UIImageView!
     
@@ -29,15 +29,15 @@ class ViewController: ViewControllerWithKeyboardControl, UITextFieldDelegate, NS
     override func viewDidLoad() {
         super.viewDidLoad()
         subscribeToKeyboardNotifications()
-        
-        searchTextField.text = "ball";
-        
     }
+    
+    
     
     override func viewWillDisappear(animated: Bool) {
         super.viewWillDisappear(true)
         unsubscribeFromKeyboardNotifications()
     }
+    
     
     
     // Keyboard notify notification center the keyboard will show
@@ -47,6 +47,7 @@ class ViewController: ViewControllerWithKeyboardControl, UITextFieldDelegate, NS
                 view.frame.origin.y -= getKeyboardHeight(notification)
         }
     }
+    
     
     
     // Keyboard notify notification center the keyboard will hide
@@ -59,26 +60,17 @@ class ViewController: ViewControllerWithKeyboardControl, UITextFieldDelegate, NS
     
     
     @IBAction func phraseSearchButton(sender: UIButton) {
-        var urlHelper: UrlHelper = UrlHelper()
-        // Change to false the line bellow and enable the second line to have option to select a picture
-        // instead random
-        urlHelper.isRandom = true
-        //        urlHelper.photoIndex = 1
-        var photoResult: PhotoResult!
-        let urlToCallTemp = urlHelper.createSearchByTextRequestURL(searchTextField.text)
-        urlHelper.requestSearchByText(urlToCallTemp, handler: { (result) -> Void in
-            if let photoResultTemp = result {
-                photoResult = photoResultTemp
-                self.imageLoaded.image = photoResult.photoImage
-            }
-        })
+        let urlToCallTemp = UrlHelper().createSearchByTextRequestURL(searchTextField.text)
+        makeRESTCallAndGetResponse(urlToCallTemp)
     }
     
     
     
     @IBAction func latLonSearchButton(sender: UIButton) {
-        // make the search by lat. and lon.
+        let urlToCallTemp = UrlHelper().createSearchByLatitudeLogitudeRequestURL(lat: latitudeTextField.text, lon: longitudeTextField.text)
+        makeRESTCallAndGetResponse(urlToCallTemp)
     }
+    
     
     
     // Check for what field (UITextView) has data and what doesn't, enabling and disabiling fields and buttons
@@ -92,6 +84,24 @@ class ViewController: ViewControllerWithKeyboardControl, UITextFieldDelegate, NS
                 searchLatLonButton.enabled = true
             }
         }
+    }
+    
+    
+    
+    // Function to call the service and populate data when response return
+    func makeRESTCallAndGetResponse(urlToCall: String) {
+        var helperObject: UrlHelper = UrlHelper()
+        var photoResult: PhotoResult!
+        // Change to false the line bellow and enable the second line to have option to select a picture
+        // instead random
+        helperObject.isRandom = true
+        //        urlHelper.photoIndex = 1
+        helperObject.requestSearch(urlToCall, handler: { (result) -> Void in
+            if let photoResultTemp = result {
+                photoResult = photoResultTemp
+                self.imageLoaded.image = photoResult.photoImage
+            }
+        })
     }
 }
 
