@@ -28,6 +28,10 @@ class ViewController: ViewControllerWithKeyboardControl, UITextFieldDelegate {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        var tap: UITapGestureRecognizer = UITapGestureRecognizer(target: self, action: "DismissKeyboard")
+        view.addGestureRecognizer(tap)
+        
         subscribeToKeyboardNotifications()
     }
     
@@ -55,6 +59,14 @@ class ViewController: ViewControllerWithKeyboardControl, UITextFieldDelegate {
         if (view.frame.origin.y <= 0 && (searchTextField.isFirstResponder() || latitudeTextField.isFirstResponder() || longitudeTextField.isFirstResponder())) {
             view.frame.origin.y += getKeyboardHeight(notification)
         }
+    }
+    
+    
+    
+    //Calls this function when the tap is recognized.
+    func DismissKeyboard(){
+        //Causes the view (or one of its embedded text fields) to resign the first responder status.
+        view.endEditing(true)
     }
     
     
@@ -101,6 +113,9 @@ class ViewController: ViewControllerWithKeyboardControl, UITextFieldDelegate {
                 photoResult = photoResultTemp
                 self.imageLoaded.image = photoResult.photoImage
                 self.detailsLabel = photoResult.photoTitle
+            } else {
+                self.imageLoaded.image = nil
+                self.detailsLabel.text = "No data"
             }
         })
     }
