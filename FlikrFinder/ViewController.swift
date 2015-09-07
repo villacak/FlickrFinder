@@ -100,6 +100,7 @@ class ViewController: ViewControllerWithKeyboardControl, UITextFieldDelegate {
             if let photoResultTemp = result {
                 photoResult = photoResultTemp
                 self.imageLoaded.image = photoResult.photoImage
+                self.detailsLabel = photoResult.photoTitle
             }
         })
     }

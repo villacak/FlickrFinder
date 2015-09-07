@@ -70,7 +70,7 @@ class UrlHelper: NSObject { //, NSURLConnectionDelegate {
         let urlToCall: String = URL_SEARCH_BASE + encodedParamsString
         return urlToCall
     }
-
+    
     
     // Assemble the Search with text url to perform a request for the search photo using a latitude and longitude
     func createSearchByLatitudeLogitudeRequestURL(#lat: String, lon: String) -> String {
@@ -84,7 +84,7 @@ class UrlHelper: NSObject { //, NSURLConnectionDelegate {
         let urlToCall: String = URL_SEARCH_BASE + encodedParamsString
         return urlToCall
     }
-
+    
     
     
     // Parse NSDictionary to AnyObject - JSON
@@ -119,7 +119,7 @@ class UrlHelper: NSObject { //, NSURLConnectionDelegate {
         let urlToReturn: String = "https://farm\(item.farm!).staticflickr.com/\(item.server!)/\(item.id!)_\(item.secret!).jpg"
         return urlToReturn
     }
-
+    
     
     
     // Make a POST request call from a url as string, this function is for the search by a text
@@ -140,7 +140,7 @@ class UrlHelper: NSObject { //, NSURLConnectionDelegate {
                 })
             } else {
                 handler(result: nil)
-                Utils().okDismissAlert(error.debugDescription, messageStr: "No Results Found")
+                Utils().okDismissAlert("Results", messageStr: "No Results Found")
             }
         })
     }
