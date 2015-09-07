@@ -57,8 +57,8 @@ class UrlHelper: NSObject { //, NSURLConnectionDelegate {
     
     
     
-    // Assemble the Search with text url to perform a request
-    func createSearchRequestURL(textToSend: String) -> String {
+    // Assemble the Search with text url to perform a request for the search photo using a text
+    func createSearchByTextRequestURL(textToSend: String) -> String {
         let urlParamsDictionary: Dictionary<String, String>  = [METHOD_DIC_KEY : URL_METHOD_SEARCH,
             API_DIC_KEY : URL_KEY_API,
             TEXT_DIC_LEY: textToSend,
@@ -66,14 +66,13 @@ class UrlHelper: NSObject { //, NSURLConnectionDelegate {
             CALLBACK_DIC_KEY : URL_CALL_BACK]
         let encodedParamsString = encodeParameters(params: urlParamsDictionary)
         let urlToCall: String = URL_SEARCH_BASE + encodedParamsString
-        
         return urlToCall
     }
     
     
     
-    // Make a GET request call from a url as string
-    func requestPOSTCall(urlToCall: String, handler:(result: PhotoResult?)-> Void) {
+    // Make a POST request call from a url as string, this function is for the search by a text
+    func requestSearchByText(urlToCall: String, handler:(result: PhotoResult?)-> Void) {
         var url: NSURL = NSURL(string: urlToCall)!
         var request: NSMutableURLRequest = NSMutableURLRequest(URL: url)
         request.HTTPMethod = POST_METHOD
@@ -116,7 +115,7 @@ class UrlHelper: NSObject { //, NSURLConnectionDelegate {
             let jsonPhotos: [String : AnyObject] = photos["photos"] as! [String : AnyObject]
             let arrayDictionaryPhoto: [[String : AnyObject]] = jsonPhotos["photo"] as! [[String : AnyObject]]//[NSDictionary]
             let photoObj: Photo = populatePhoto(arrayDictionaryPhoto[photoIndex])
-            let urlToCall: String = assembleUrlToLoadImage(photoObj)
+            let urlToCall: String = assembleUrlToLoadImageForSearchByText(photoObj)
             
             let url: NSURL = NSURL(string: urlToCall)!
             if let imageData = NSData(contentsOfURL: url) {
@@ -155,10 +154,9 @@ class UrlHelper: NSObject { //, NSURLConnectionDelegate {
     
     
     // ASsemble the URL to load the images as per link: https://www.flickr.com/services/api/flickr.photos.search.html
-    func assembleUrlToLoadImage(item: Photo) -> String {
-        // https://farm{farm-id}.staticflickr.com/{server-id}/{id}_{secret}.jpg
-        var urlToReturn: String = "https://farm\(item.farm!).staticflickr.com/\(item.server!)/\(item.id!)_\(item.secret!).jpg"
-        println(urlToReturn)
+    func assembleUrlToLoadImageForSearchByText(item: Photo) -> String {
+        // URL to forms : https://farm{farm-id}.staticflickr.com/{server-id}/{id}_{secret}.jpg
+        let urlToReturn: String = "https://farm\(item.farm!).staticflickr.com/\(item.server!)/\(item.id!)_\(item.secret!).jpg"
         return urlToReturn
     }
     

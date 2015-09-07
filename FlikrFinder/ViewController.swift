@@ -60,17 +60,18 @@ class ViewController: ViewControllerWithKeyboardControl, UITextFieldDelegate, NS
     
     @IBAction func phraseSearchButton(sender: UIButton) {
         var urlHelper: UrlHelper = UrlHelper()
+        // Change to false the line bellow and enable the second line to have option to select a picture
+        // instead random
         urlHelper.isRandom = true
-//        urlHelper.photoIndex = 1
+        //        urlHelper.photoIndex = 1
         var photoResult: PhotoResult!
-        let urlToCallTemp = urlHelper.createSearchRequestURL(searchTextField.text)
-        urlHelper.requestPOSTCall(urlToCallTemp, handler: { (result) -> Void in
+        let urlToCallTemp = urlHelper.createSearchByTextRequestURL(searchTextField.text)
+        urlHelper.requestSearchByText(urlToCallTemp, handler: { (result) -> Void in
             if let photoResultTemp = result {
                 photoResult = photoResultTemp
                 self.imageLoaded.image = photoResult.photoImage
             }
         })
-        //        let photoResult: PhotoResult = urlHelper.maestroRequest(searchTextField.text)
     }
     
     
