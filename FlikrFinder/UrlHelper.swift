@@ -132,15 +132,16 @@ class UrlHelper: NSObject { //, NSURLConnectionDelegate {
             var error: AutoreleasingUnsafeMutablePointer<NSError?> = nil
             let jsonResult: NSDictionary? = NSJSONSerialization.JSONObjectWithData(data, options:NSJSONReadingOptions.MutableContainers, error: error) as? NSDictionary
             
-            if (jsonResult != nil && jsonResult!.count > 1) {
+            if (jsonResult != nil) {
                 self.requestPhoto(jsonResult!, itemsCount: jsonResult!.count, handler: { (result) -> Void in
                     if let hasFinished = result {
                         handler(result: self.photoResultReturn)
+                    } else {
+                        handler(result: nil)
                     }
                 })
             } else {
                 handler(result: nil)
-                Utils().okDismissAlert("Results", messageStr: "No Results Found")
             }
         })
     }
@@ -157,22 +158,26 @@ class UrlHelper: NSObject { //, NSURLConnectionDelegate {
             
             let jsonPhotos: [String : AnyObject] = photos["photos"] as! [String : AnyObject]
             let arrayDictionaryPhoto: [[String : AnyObject]] = jsonPhotos["photo"] as! [[String : AnyObject]]//[NSDictionary]
-            let photoObj: Photo = populatePhoto(arrayDictionaryPhoto[photoIndex])
-            let urlToCall: String = assembleUrlToLoadImageFromSearch(photoObj)
             
-            let url: NSURL = NSURL(string: urlToCall)!
-            if let imageData = NSData(contentsOfURL: url) {
-                dispatch_async(dispatch_get_main_queue(), {
-                    let imageTemp: UIImage = UIImage(data: imageData)!
-                    var titleLabel: UILabel = UILabel()
-                    var photoDetailLabel: UILabel = UILabel()
-                    titleLabel.text = photoObj.title
-                    photoDetailLabel.text = ""
-                    self.photoResultReturn = PhotoResult(photoImage: imageTemp, photoTitle: titleLabel, photoDetail: photoDetailLabel)
-                    handler(result: true)
-                })
+            if (arrayDictionaryPhoto.count > 0) {
+                let photoObj: Photo = populatePhoto(arrayDictionaryPhoto[photoIndex])
+                let urlToCall: String = assembleUrlToLoadImageFromSearch(photoObj)
+                
+                let url: NSURL = NSURL(string: urlToCall)!
+                if let imageData = NSData(contentsOfURL: url) {
+                    dispatch_async(dispatch_get_main_queue(), {
+                        let imageTemp: UIImage = UIImage(data: imageData)!
+                        var titleLabel: UILabel = UILabel()
+                        var photoDetailLabel: UILabel = UILabel()
+                        titleLabel.text = photoObj.title
+                        photoDetailLabel.text = self.EMPTY_STRING
+                        self.photoResultReturn = PhotoResult(photoImage: imageTemp, photoTitle: titleLabel, photoDetail: photoDetailLabel)
+                        handler(result: true)
+                    })
+                }
             } else {
-                println("Image does not exist at \(url)")
+                handler(result: false)
+                println("No Result Found")
             }
         }
     }

@@ -21,33 +21,36 @@ class Utils: NSObject {
     }
     
     
-    // Just display an alert, telling the search was empty
-    func noResultsAlert() -> UIAlertController {
-        let alert: UIAlertController = okDismissAlert("Empty Result", messageStr: "The search didn't return any results")
-        return alert
+    // Validate lat and lon values
+    func validateLatAnLong(#latValue: String, lonValue: String, controller: UIViewController) -> Bool {
+        var booleanToReturn: Bool = false
+        if latValue != "" && lonValue != "" {
+            let latFloat: Float = (latValue as NSString).floatValue
+            let lonFloat: Float = (lonValue as NSString).floatValue
+            if (latFloat <= 90 && latFloat >= -90 && lonFloat <= 180 && lonFloat >= -180) {
+                booleanToReturn = true
+            }  else {
+                okDismissAlert(titleStr: "Lat and Lon Fields", messageStr: "Latitue range must be between -90 and 90 and longitude must be between -180 and 180 degrees.", controller: controller)
+            }
+        } else {
+            okDismissAlert(titleStr: "Lat and Lon Fields", messageStr: "Not allowed search with empty field.", controller: controller)
+        }
+        return booleanToReturn
     }
     
     
     // Just display an alert, telling the search was empty
-    func wrongLatitudeAlert() -> UIAlertController {
-        let alert: UIAlertController = okDismissAlert("Wrong Value", messageStr: "The Latitude must be within range of -90 to 90 degrees.")
-        return alert
-    }
-    
-    
-    // Just display an alert, telling the search was empty
-    func wrongLongitudeAlert() -> UIAlertController {
-        let alert: UIAlertController = okDismissAlert("Wrong Value", messageStr: "The Latitude must be within range of -180 to 180 degrees.")
-        return alert
+    func noResultsAlert(controller: UIViewController) {
+        okDismissAlert(titleStr: "Empty Result", messageStr: "The search didn't return any results", controller: controller)
     }
     
     
     // UIAlertDisplay with one ok buttom to dismiss
-    func okDismissAlert(titleStr: String, messageStr: String) -> UIAlertController {
+    func okDismissAlert(#titleStr: String, messageStr: String, controller: UIViewController) {
         let alert: UIAlertController = UIAlertController(title: titleStr, message: messageStr, preferredStyle: UIAlertControllerStyle.Alert)
         let okDismiss: UIAlertAction = UIAlertAction(title: "Ok", style: UIAlertActionStyle.Cancel, handler: nil)
         alert.addAction(okDismiss)
-        return alert
+        controller.presentViewController(alert, animated: true, completion: {})
     }
     
 }

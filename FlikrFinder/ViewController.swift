@@ -73,9 +73,9 @@ class ViewController: ViewControllerWithKeyboardControl, UITextFieldDelegate {
     
     
     @IBAction func phraseSearchButton(sender: UIButton) {
+        DismissKeyboard()
         if searchTextField.text == "" {
-            alert = Utils().okDismissAlert("Text Field", messageStr: "Not allowed search with empty field.")
-            self.presentViewController(alert, animated: true, completion: {})
+            Utils().okDismissAlert(titleStr: "Text Field", messageStr: "Not allowed search with empty field.", controller: self)
         } else {
             let urlToCallTemp = UrlHelper().createSearchByTextRequestURL(searchTextField.text)
             makeRESTCallAndGetResponse(urlToCallTemp)
@@ -85,14 +85,13 @@ class ViewController: ViewControllerWithKeyboardControl, UITextFieldDelegate {
     
     
     @IBAction func latLonSearchButton(sender: UIButton) {
-        if latitudeTextField.text == "" || longitudeTextField.text == "" {
-            alert = Utils().okDismissAlert("Lat and Lon Fields", messageStr: "Not allowed search with empty field.")
-            self.presentViewController(alert, animated: true, completion: {})
-        } else {
+        DismissKeyboard()
+        if (Utils().validateLatAnLong(latValue: latitudeTextField.text, lonValue: longitudeTextField.text, controller: self)) {
             let urlToCallTemp = UrlHelper().createSearchByLatitudeLogitudeRequestURL(lat: latitudeTextField.text, lon: longitudeTextField.text)
             makeRESTCallAndGetResponse(urlToCallTemp)
         }
     }
+    
     
     
     
@@ -128,8 +127,10 @@ class ViewController: ViewControllerWithKeyboardControl, UITextFieldDelegate {
             } else {
                 self.imageLoaded.image = nil
                 self.detailsLabel.text = "No data"
+                Utils().noResultsAlert(self)
             }
         })
     }
 }
+
 
