@@ -21,6 +21,7 @@ class ViewController: ViewControllerWithKeyboardControl, UITextFieldDelegate {
     @IBOutlet weak var searchButton: UIButton!
     @IBOutlet weak var searchLatLonButton: UIButton!
     
+    var alert: UIAlertController!
     
     let PHRASE_SEARCH: String = "Phrase Text Field"
     let LATITUDE: String = "Latitude"
@@ -72,15 +73,25 @@ class ViewController: ViewControllerWithKeyboardControl, UITextFieldDelegate {
     
     
     @IBAction func phraseSearchButton(sender: UIButton) {
-        let urlToCallTemp = UrlHelper().createSearchByTextRequestURL(searchTextField.text)
-        makeRESTCallAndGetResponse(urlToCallTemp)
+        if searchTextField.text == "" {
+            alert = Utils().okDismissAlert("Text Field", messageStr: "Not allowed search with empty field.")
+            self.presentViewController(alert, animated: true, completion: {})
+        } else {
+            let urlToCallTemp = UrlHelper().createSearchByTextRequestURL(searchTextField.text)
+            makeRESTCallAndGetResponse(urlToCallTemp)
+        }
     }
     
     
     
     @IBAction func latLonSearchButton(sender: UIButton) {
-        let urlToCallTemp = UrlHelper().createSearchByLatitudeLogitudeRequestURL(lat: latitudeTextField.text, lon: longitudeTextField.text)
-        makeRESTCallAndGetResponse(urlToCallTemp)
+        if latitudeTextField.text == "" || longitudeTextField.text == "" {
+            alert = Utils().okDismissAlert("Lat and Lon Fields", messageStr: "Not allowed search with empty field.")
+            self.presentViewController(alert, animated: true, completion: {})
+        } else {
+            let urlToCallTemp = UrlHelper().createSearchByLatitudeLogitudeRequestURL(lat: latitudeTextField.text, lon: longitudeTextField.text)
+            makeRESTCallAndGetResponse(urlToCallTemp)
+        }
     }
     
     
@@ -112,6 +123,7 @@ class ViewController: ViewControllerWithKeyboardControl, UITextFieldDelegate {
             if let photoResultTemp = result {
                 photoResult = photoResultTemp
                 self.imageLoaded.image = photoResult.photoImage
+                self.imageLoaded.contentMode = UIViewContentMode.ScaleAspectFit
                 self.detailsLabel = photoResult.photoTitle
             } else {
                 self.imageLoaded.image = nil

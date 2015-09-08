@@ -22,29 +22,32 @@ class Utils: NSObject {
     
     
     // Just display an alert, telling the search was empty
-    func noResultsAlert() {
-        okDismissAlert("Empty Result", messageStr: "The search didn't return any results")
-    }
-    
-    
-    
-    // Just display an alert, telling the search was empty
-    func wrongLatitudeAlert() {
-        okDismissAlert("Wrong Value", messageStr: "The Latitude must be within range of -90 to 90 degrees.")
+    func noResultsAlert() -> UIAlertController {
+        let alert: UIAlertController = okDismissAlert("Empty Result", messageStr: "The search didn't return any results")
+        return alert
     }
     
     
     // Just display an alert, telling the search was empty
-    func wrongLongitudeAlert() {
-        okDismissAlert("Wrong Value", messageStr: "The Latitude must be within range of -180 to 180 degrees.")
+    func wrongLatitudeAlert() -> UIAlertController {
+        let alert: UIAlertController = okDismissAlert("Wrong Value", messageStr: "The Latitude must be within range of -90 to 90 degrees.")
+        return alert
+    }
+    
+    
+    // Just display an alert, telling the search was empty
+    func wrongLongitudeAlert() -> UIAlertController {
+        let alert: UIAlertController = okDismissAlert("Wrong Value", messageStr: "The Latitude must be within range of -180 to 180 degrees.")
+        return alert
     }
     
     
     // UIAlertDisplay with one ok buttom to dismiss
-    func okDismissAlert(titleStr: String, messageStr: String) {
+    func okDismissAlert(titleStr: String, messageStr: String) -> UIAlertController {
         let alert: UIAlertController = UIAlertController(title: titleStr, message: messageStr, preferredStyle: UIAlertControllerStyle.Alert)
         let okDismiss: UIAlertAction = UIAlertAction(title: "Ok", style: UIAlertActionStyle.Cancel, handler: nil)
         alert.addAction(okDismiss)
+        return alert
     }
     
 }
