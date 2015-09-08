@@ -123,7 +123,7 @@ class ViewController: ViewControllerWithKeyboardControl, UITextFieldDelegate {
                 photoResult = photoResultTemp
                 self.imageLoaded.image = photoResult.photoImage
                 self.imageLoaded.contentMode = UIViewContentMode.ScaleAspectFit
-                self.detailsLabel = photoResult.photoTitle
+                self.detailsLabel.text = photoResult.photoTitle.text
             } else {
                 self.imageLoaded.image = nil
                 self.detailsLabel.text = "No data"
