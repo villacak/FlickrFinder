@@ -30,7 +30,7 @@ class ViewController: ViewControllerWithKeyboardControl, UITextFieldDelegate {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        var tap: UITapGestureRecognizer = UITapGestureRecognizer(target: self, action: "DismissKeyboard")
+        let tap: UITapGestureRecognizer = UITapGestureRecognizer(target: self, action: "DismissKeyboard")
         view.addGestureRecognizer(tap)
         
         subscribeToKeyboardNotifications()
@@ -77,7 +77,7 @@ class ViewController: ViewControllerWithKeyboardControl, UITextFieldDelegate {
         if searchTextField.text == "" {
             Utils().okDismissAlert(titleStr: "Text Field", messageStr: "Not allowed search with empty field.", controller: self)
         } else {
-            let urlToCallTemp = UrlHelper().createSearchByTextRequestURL(searchTextField.text)
+            let urlToCallTemp = UrlHelper().createSearchByTextRequestURL(searchTextField.text!)
             makeRESTCallAndGetResponse(urlToCallTemp)
         }
     }
@@ -86,8 +86,8 @@ class ViewController: ViewControllerWithKeyboardControl, UITextFieldDelegate {
     
     @IBAction func latLonSearchButton(sender: UIButton) {
         DismissKeyboard()
-        if (Utils().validateLatAnLong(latValue: latitudeTextField.text, lonValue: longitudeTextField.text, controller: self)) {
-            let urlToCallTemp = UrlHelper().createSearchByLatitudeLogitudeRequestURL(lat: latitudeTextField.text, lon: longitudeTextField.text)
+        if (Utils().validateLatAnLong(latValue: latitudeTextField.text!, lonValue: longitudeTextField.text!, controller: self)) {
+            let urlToCallTemp = UrlHelper().createSearchByLatitudeLogitudeRequestURL(lat: latitudeTextField.text!, lon: longitudeTextField.text!)
             makeRESTCallAndGetResponse(urlToCallTemp)
         }
     }
@@ -112,15 +112,15 @@ class ViewController: ViewControllerWithKeyboardControl, UITextFieldDelegate {
     
     // Function to call the service and populate data when response return
     func makeRESTCallAndGetResponse(urlToCall: String) {
-        var helperObject: UrlHelper = UrlHelper()
+        let helperObject: UrlHelper = UrlHelper()
         var photoResult: PhotoResult!
         // Change to false the line bellow and enable the second line to have option to select a picture
         // instead random
         helperObject.isRandom = true
         //        urlHelper.photoIndex = 1
-        helperObject.requestSearch(urlToCall, handler: { (result) -> Void in
+        helperObject.requestSearch(urlToCall: urlToCall, completionHandler: { (result, error) -> Void in
             if let photoResultTemp = result {
-                photoResult = photoResultTemp
+                photoResult = photoResultTemp as! PhotoResult
                 self.imageLoaded.image = photoResult.photoImage
                 self.imageLoaded.contentMode = UIViewContentMode.ScaleAspectFit
                 self.detailsLabel.text = photoResult.photoTitle.text

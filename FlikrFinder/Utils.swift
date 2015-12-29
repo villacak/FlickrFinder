@@ -22,7 +22,7 @@ class Utils: NSObject {
     
     
     // Validate lat and lon values
-    func validateLatAnLong(#latValue: String, lonValue: String, controller: UIViewController) -> Bool {
+    func validateLatAnLong(latValue latValue: String, lonValue: String, controller: UIViewController) -> Bool {
         var booleanToReturn: Bool = false
         if latValue != "" && lonValue != "" {
             let latFloat: Float = (latValue as NSString).floatValue
@@ -46,7 +46,7 @@ class Utils: NSObject {
     
     
     // UIAlertDisplay with one ok buttom to dismiss
-    func okDismissAlert(#titleStr: String, messageStr: String, controller: UIViewController) {
+    func okDismissAlert(titleStr titleStr: String, messageStr: String, controller: UIViewController) {
         let alert: UIAlertController = UIAlertController(title: titleStr, message: messageStr, preferredStyle: UIAlertControllerStyle.Alert)
         let okDismiss: UIAlertAction = UIAlertAction(title: "Ok", style: UIAlertActionStyle.Cancel, handler: nil)
         alert.addAction(okDismiss)

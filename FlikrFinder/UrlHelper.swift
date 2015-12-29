@@ -50,9 +50,9 @@ class UrlHelper: NSObject { //, NSURLConnectionDelegate {
     
     
     // Encode the Dictionary Strings
-    func encodeParameters(#params: [String: String]) -> String {
-        var queryItems = map(params) { NSURLQueryItem(name:$0, value:$1)}
-        var components = NSURLComponents()
+    func encodeParameters(params params: [String: String]) -> String {
+        let queryItems = params.map { NSURLQueryItem(name:$0, value:$1)}
+        let components = NSURLComponents()
         components.queryItems = queryItems
         return components.percentEncodedQuery ?? EMPTY_STRING
     }
@@ -73,7 +73,7 @@ class UrlHelper: NSObject { //, NSURLConnectionDelegate {
     
     
     // Assemble the Search with text url to perform a request for the search photo using a latitude and longitude
-    func createSearchByLatitudeLogitudeRequestURL(#lat: String, lon: String) -> String {
+    func createSearchByLatitudeLogitudeRequestURL(lat lat: String, lon: String) -> String {
         let urlParamsDictionary: Dictionary<String, String>  = [METHOD_DIC_KEY : URL_METHOD_SEARCH,
             API_DIC_KEY : URL_KEY_API,
             LATITUDE: lat,
@@ -89,8 +89,8 @@ class UrlHelper: NSObject { //, NSURLConnectionDelegate {
     
     // Parse NSDictionary to AnyObject - JSON
     func parseNSDictionaryToJSON(nsDictionary: NSDictionary) -> AnyObject {
-        let bytes: NSData = NSJSONSerialization.dataWithJSONObject(nsDictionary, options: NSJSONWritingOptions.allZeros, error: nil)!
-        let jsonObj: AnyObject = NSJSONSerialization.JSONObjectWithData(bytes, options: nil, error: nil) as! NSDictionary
+        let bytes: NSData = try! NSJSONSerialization.dataWithJSONObject(nsDictionary, options: NSJSONWritingOptions())
+        let jsonObj: AnyObject = (try! NSJSONSerialization.JSONObjectWithData(bytes, options: [])) as! NSDictionary
         return jsonObj
     }
     
@@ -98,7 +98,7 @@ class UrlHelper: NSObject { //, NSURLConnectionDelegate {
     
     // Populate Photo object
     func populatePhoto(jsonObj: AnyObject) -> Photo {
-        var photoObjectToReturn: Photo = Photo()
+        let photoObjectToReturn: Photo = Photo()
         photoObjectToReturn.farm = String((jsonObj["farm"] as? Int)!)
         photoObjectToReturn.id = jsonObj["id"]! as? String
         photoObjectToReturn.owner = jsonObj["owner"]! as? String
@@ -123,27 +123,34 @@ class UrlHelper: NSObject { //, NSURLConnectionDelegate {
     
     
     // Make a POST request call from a url as string, this function is for the search by a text
-    func requestSearch(urlToCall: String, handler:(result: PhotoResult?)-> Void) {
-        var url: NSURL = NSURL(string: urlToCall)!
-        var request: NSMutableURLRequest = NSMutableURLRequest(URL: url)
+    func requestSearch(urlToCall urlToCall: String, completionHandler:(result: AnyObject!, error: String?) -> Void) -> NSURLSessionDataTask  {
+        let url: NSURL = NSURL(string: urlToCall)!
+        let request: NSMutableURLRequest = NSMutableURLRequest(URL: url)
         request.HTTPMethod = POST_METHOD
         
-        NSURLConnection.sendAsynchronousRequest(request, queue: NSOperationQueue(), completionHandler:{ (response:NSURLResponse!, data: NSData!, error: NSError!) -> Void in
-            var error: AutoreleasingUnsafeMutablePointer<NSError?> = nil
-            let jsonResult: NSDictionary? = NSJSONSerialization.JSONObjectWithData(data, options:NSJSONReadingOptions.MutableContainers, error: error) as? NSDictionary
-            
-            if (jsonResult != nil) {
-                self.requestPhoto(jsonResult!, itemsCount: jsonResult!.count, handler: { (result) -> Void in
-                    if let hasFinished = result {
-                        handler(result: self.photoResultReturn)
-                    } else {
-                        handler(result: nil)
-                    }
-                })
-            } else {
-                handler(result: nil)
+        let session = NSURLSession.sharedSession()
+        let task = session.dataTaskWithRequest(request, completionHandler: { (data, response, error) in
+            if let data = data {
+                do {
+                    let jsonResult: NSDictionary? = try NSJSONSerialization.JSONObjectWithData(data, options:NSJSONReadingOptions.MutableContainers) as? NSDictionary
+                    self.requestPhoto(jsonResult!, itemsCount: jsonResult!.count, handler: { (result) -> Void in
+                        if let _ = result {
+                            completionHandler(result: self.photoResultReturn, error: nil)
+                        } else {
+                            completionHandler(result: nil, error: nil)
+                        }
+                        
+                    })
+                } catch let error as NSError {
+                    completionHandler(result: nil, error: error.localizedDescription)
+                }
+            } else if let error = error {
+                completionHandler(result: nil, error: error.localizedDescription)
             }
         })
+        task.resume()
+        return task
+        
     }
     
     
@@ -167,8 +174,8 @@ class UrlHelper: NSObject { //, NSURLConnectionDelegate {
                 if let imageData = NSData(contentsOfURL: url) {
                     dispatch_async(dispatch_get_main_queue(), {
                         let imageTemp: UIImage = UIImage(data: imageData)!
-                        var titleLabel: UILabel = UILabel()
-                        var photoDetailLabel: UILabel = UILabel()
+                        let titleLabel: UILabel = UILabel()
+                        let photoDetailLabel: UILabel = UILabel()
                         titleLabel.text = photoObj.title
                         photoDetailLabel.text = self.EMPTY_STRING
                         self.photoResultReturn = PhotoResult(photoImage: imageTemp, photoTitle: titleLabel, photoDetail: photoDetailLabel)
@@ -177,7 +184,7 @@ class UrlHelper: NSObject { //, NSURLConnectionDelegate {
                 }
             } else {
                 handler(result: false)
-                println("No Result Found")
+                print("No Result Found")
             }
         }
     }
